@@ -19,6 +19,7 @@ ch = logging.StreamHandler()
 ch.setFormatter(format)
 logger.addHandler(ch)
 import sqlite3
+import requests
 import json
 con = sqlite3.connect("data.db")
 cur = con.cursor()
@@ -81,21 +82,24 @@ def fetch_and_store_data(driver,retry,profile):
                     mentions = re.findall(r"@(\w+)", content)
                     profile_picture = Finder.find_profile_image_link(tweet)
                     link = Finder.find_external_link(tweet)
-                    if '//' in content:
-                        for li in content.split("\n"):
-                            if li.startswith('//'):
-                                cur.execute(
-                                    f"insert into main(tweet_id,username,name,images,tweet_url,link,profile) VALUES('{status}','{username}','{name}','{images}','{tweet_url}','{li}','{profile}')")
-                                con.commit()
-                    if link=="":
-                        continue
                     query = f"SELECT * from main where tweet_id='{status}'"
                     if cur.execute(query).fetchone() is not None:
-                        scol=scol+1
+                        scol = scol + 1
                         continue
-                    cur.execute(
-                        f"insert into main(tweet_id,username,name,images,tweet_url,link,profile) VALUES('{status}','{username}','{name}','{images}','{tweet_url}','{link}','{profile}')")
-                    con.commit()
+                    if '//' in content or 'http://' in content or 'https://' in content:
+                        for li in content.split("\n"):
+                            if li.startswith('//') or li.startswith('http://') or li.startswith('https://'):
+                                lnk=li.split(" ")[0]
+                                nots=False
+                                cur.execute(
+                                    f"insert into main(tweet_id,username,name,images,tweet_url,link,profile) VALUES('{status}','{username}','{name}','{images}','{tweet_url}','{lnk}','{profile}')")
+                                con.commit()
+                    if 'https://t.co/' in link:
+                        r = requests.get(link)
+                        link=r.url
+                        cur.execute(
+                            f"insert into main(tweet_id,username,name,images,tweet_url,link,profile) VALUES('{status}','{username}','{name}','{images}','{tweet_url}','{link}','{profile}')")
+                        con.commit()
                     posts_data[status] = {
                         "tweet_id": status,
                         "username": username,
@@ -164,10 +168,6 @@ def scrap(driver):
     except Exception as ex:
         logger.exception(
             "Error at method scrap on : {}".format(ex))
-
-
-
-
 
 
 
