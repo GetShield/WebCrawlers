@@ -1,8 +1,10 @@
-fake_headers==1.0.2
-python_dateutil==2.8.2
-requests
-pyopenssl==22.0.0
-selenium==4.5.0
-selenium_wire==4.6.4
-webdriver_manager==3.2.2
-undetected_chromedriver
+# fake_headers==1.0.2
+# python_dateutil==2.8.2
+# requests
+# pyopenssl==22.0.0
+# selenium==4.5.0
+# selenium_wire==4.6.4
+# webdriver_manager==3.2.2
+# undetected_chromedriver
+tweepy==4.12.1
+python-dotenv==0.21.0
