@@ -129,4 +129,4 @@ if __name__ == "__main__":
                 fetch_and_store_data(link)
             except Exception as ex:
                 print(ex)
-        time.sleep(3600)
+        time.sleep(10)
